@@ -32,7 +32,6 @@ type Client struct {
 	Account     *AccountService
 	Payments    *PaymentService
 	Withdrawals *WithdrawalService
-	GiftCards   *GiftCardService
 }
 
 type Option func(*Client)
@@ -64,7 +63,6 @@ func NewClient(clientID, secretKey string, options ...Option) (*Client, error) {
 	client.Account = &AccountService{client: client}
 	client.Payments = &PaymentService{client: client}
 	client.Withdrawals = &WithdrawalService{client: client}
-	client.GiftCards = &GiftCardService{client: client}
 	return client, nil
 }
 
@@ -166,107 +164,6 @@ func (s *WithdrawalService) Create(ctx context.Context, input WithdrawalCreateRe
 		return nil, err
 	}
 	return &result, nil
-}
-
-type GiftCardService struct{ client *Client }
-
-func (s *GiftCardService) Issue(ctx context.Context, input GiftCardIssueRequest) (*GiftCardIssueResponse, error) {
-	var result GiftCardIssueResponse
-	if err := s.client.do(ctx, http.MethodPost, "/api/v1/giftcard/issue", input, nil, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *GiftCardService) ListBatches(ctx context.Context, options PaginationOptions) (*CursorPage[GiftCardBatch], error) {
-	var result CursorPage[GiftCardBatch]
-	if err := s.client.do(ctx, http.MethodGet, "/api/v1/giftcard/batch", nil, paginationValues(options), &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *GiftCardService) GetBatch(ctx context.Context, batchID string) (*GiftCardBatchDetail, error) {
-	var result GiftCardBatchDetail
-	if err := s.client.do(ctx, http.MethodGet, "/api/v1/giftcard/batch/"+url.PathEscape(batchID), nil, nil, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *GiftCardService) ListBatchCards(ctx context.Context, batchID string, options PaginationOptions, reveal bool) (*CursorPage[GiftCard], error) {
-	var result CursorPage[GiftCard]
-	query := paginationValues(options)
-	if reveal {
-		query.Set("reveal", "true")
-	}
-	if err := s.client.do(ctx, http.MethodGet, "/api/v1/giftcard/batch/"+url.PathEscape(batchID)+"/cards", nil, query, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *GiftCardService) RevokeBatch(ctx context.Context, batchID string, input GiftCardRevokeRequest) (*GiftCardRevokeResponse, error) {
-	var result GiftCardRevokeResponse
-	if err := s.client.do(ctx, http.MethodPost, "/api/v1/giftcard/batch/"+url.PathEscape(batchID)+"/revoke", input, nil, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *GiftCardService) ListCards(ctx context.Context, options GiftCardListOptions) (*CursorPage[GiftCard], error) {
-	var result CursorPage[GiftCard]
-	query := paginationValues(options.PaginationOptions)
-	if options.Status != "" {
-		query.Set("status", options.Status)
-	}
-	if options.BatchID != "" {
-		query.Set("batchId", options.BatchID)
-	}
-	if options.Standalone != nil {
-		query.Set("standalone", fmt.Sprintf("%t", *options.Standalone))
-	}
-	if options.Reveal {
-		query.Set("reveal", "true")
-	}
-	if err := s.client.do(ctx, http.MethodGet, "/api/v1/giftcard/card", nil, query, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *GiftCardService) GetCard(ctx context.Context, cardID string, reveal bool) (*GiftCard, error) {
-	var result GiftCard
-	query := url.Values{}
-	if reveal {
-		query.Set("reveal", "true")
-	}
-	if err := s.client.do(ctx, http.MethodGet, "/api/v1/giftcard/card/"+url.PathEscape(cardID), nil, query, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func (s *GiftCardService) RevokeCard(ctx context.Context, cardID string, input GiftCardRevokeRequest) (*GiftCardRevokeResponse, error) {
-	var result GiftCardRevokeResponse
-	if err := s.client.do(ctx, http.MethodPost, "/api/v1/giftcard/card/"+url.PathEscape(cardID)+"/revoke", input, nil, &result); err != nil {
-		return nil, err
-	}
-	return &result, nil
-}
-
-func paginationValues(options PaginationOptions) url.Values {
-	values := url.Values{}
-	if options.Cursor != "" {
-		values.Set("cursor", options.Cursor)
-	}
-	if options.Limit > 0 {
-		values.Set("limit", fmt.Sprint(options.Limit))
-	}
-	if options.Sort != "" {
-		values.Set("sort", options.Sort)
-	}
-	return values
 }
 
 func errorMessage(body []byte, statusCode int) string {
