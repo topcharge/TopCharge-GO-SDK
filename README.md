@@ -4,15 +4,21 @@ Dependency-free Go SDK for the TopCharge merchant API. It uses `net/http`, works
 
 ## Release status
 
-This module is currently consumed from this repository for local development. `github.com/topcharge/topcharge-go` is its intended module path, not a claim that the module is publicly available yet.
+The SDK source is publicly available at [github.com/topcharge/TopCharge-GO-SDK](https://github.com/topcharge/TopCharge-GO-SDK).
+
+## Install
+
+```bash
+go get github.com/topcharge/TopCharge-GO-SDK
+```
 
 ## Install locally
 
 Add this local module to your application during development:
 
 ```bash
-go mod edit -require=github.com/topcharge/topcharge-go@v0.0.0
-go mod edit -replace=github.com/topcharge/topcharge-go=/absolute/path/to/sdk/go
+go mod edit -require=github.com/topcharge/TopCharge-GO-SDK@v0.0.0
+go mod edit -replace=github.com/topcharge/TopCharge-GO-SDK=/absolute/path/to/sdk/go
 go mod tidy
 ```
 
@@ -25,7 +31,7 @@ import (
     "context"
     "os"
 
-    topcharge "github.com/topcharge/topcharge-go"
+    topcharge "github.com/topcharge/TopCharge-GO-SDK"
 )
 
 func main() {

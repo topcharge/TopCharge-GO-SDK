@@ -1,3 +1,3 @@
-module github.com/topcharge/topcharge-go
+module github.com/topcharge/TopCharge-GO-SDK
 
 go 1.22

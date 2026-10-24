@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	topcharge "github.com/topcharge/topcharge-go"
+	topcharge "github.com/topcharge/TopCharge-GO-SDK"
 )
 
 func main() {
