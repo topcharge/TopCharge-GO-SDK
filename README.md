@@ -96,3 +96,7 @@ The default HTTP client timeout is 30 seconds, and every request accepts a `cont
 ## License
 
 [MIT License](LICENSE)
+
+## Source
+
+[github.com/topcharge/TopCharge-GO-SDK](https://github.com/topcharge/TopCharge-GO-SDK)
